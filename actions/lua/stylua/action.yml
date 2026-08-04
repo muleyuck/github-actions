@@ -1,0 +1,24 @@
+name: stylua
+description: 'Check Lua formatting with stylua'
+
+inputs:
+  paths:
+    description: 'Paths to check, space separated'
+    required: false
+    default: 'lua/ plugin/'
+  token:
+    description: 'GitHub token used to download the stylua release'
+    required: true
+  version:
+    description: 'Version of stylua to use'
+    required: false
+    default: 'latest'
+
+runs:
+  using: composite
+  steps:
+    - uses: JohnnyMorganz/stylua-action@76fd70c03e6340ceaf673366712db9b20560b402 # v2.0.0
+      with:
+        token: ${{ inputs.token }}
+        version: ${{ inputs.version }}
+        args: --check ${{ inputs.paths }}

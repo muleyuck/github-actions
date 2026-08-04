@@ -1,0 +1,73 @@
+name: ci-lua-neovim
+
+on:
+  workflow_call:
+    inputs:
+      lua-paths:
+        description: 'Paths for luacheck and stylua, space separated'
+        type: string
+        required: false
+        default: 'lua/ plugin/'
+      test-command:
+        description: 'Command that runs the tests'
+        type: string
+        required: false
+        default: 'make test'
+      neovim-version:
+        description: 'Version of Neovim used for the tests'
+        type: string
+        required: false
+        default: 'stable'
+
+permissions: {}
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  luacheck:
+    name: luacheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: muleyuck/github-actions/actions/lua/luacheck@v1
+        with:
+          paths: ${{ inputs.lua-paths }}
+
+  stylua:
+    name: stylua
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: muleyuck/github-actions/actions/lua/stylua@v1
+        with:
+          paths: ${{ inputs.lua-paths }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: muleyuck/github-actions/actions/lua/setup-neovim@v1
+        with:
+          version: ${{ inputs.neovim-version }}
+      - name: Run tests
+        env:
+          TEST_COMMAND: ${{ inputs.test-command }}
+        run: bash -c "$TEST_COMMAND"

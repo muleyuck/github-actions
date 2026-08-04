@@ -1,0 +1,29 @@
+name: luacheck
+description: 'Install luacheck and run static analysis over the Lua sources'
+
+inputs:
+  paths:
+    description: 'Paths to analyse, space separated, relative to working-directory'
+    required: false
+    default: 'lua/ plugin/'
+  working-directory:
+    description: 'Directory to run luacheck in. .luacheckrc is searched from here upwards'
+    required: false
+    default: '.'
+
+runs:
+  using: composite
+  steps:
+    - name: Install luacheck
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y luarocks
+        sudo luarocks install luacheck
+
+    - name: Run luacheck
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        PATHS: ${{ inputs.paths }}
+      run: luacheck $PATHS

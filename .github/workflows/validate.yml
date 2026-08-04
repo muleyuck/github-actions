@@ -63,3 +63,30 @@ jobs:
         run: |
           command -v cargo
           make test
+
+  fixture-lua-neovim:
+    name: fixture (lua-neovim)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: ./actions/lua/luacheck
+        with:
+          working-directory: tests/fixtures/lua-neovim
+          paths: lua/
+
+      - uses: ./actions/lua/stylua
+        with:
+          paths: tests/fixtures/lua-neovim/lua/
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: ./actions/lua/setup-neovim
+
+      - name: Assert Neovim can load the fixture plugin
+        working-directory: tests/fixtures/lua-neovim
+        run: make test
