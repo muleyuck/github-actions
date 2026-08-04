@@ -90,3 +90,24 @@ jobs:
       - name: Assert Neovim can load the fixture plugin
         working-directory: tests/fixtures/lua-neovim
         run: make test
+
+  fixture-node-pnpm:
+    name: fixture (node-pnpm)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./actions/node/setup
+        with:
+          working-directory: tests/fixtures/node-pnpm
+      - name: Assert node and pnpm are usable
+        working-directory: tests/fixtures/node-pnpm
+        run: |
+          command -v node
+          command -v pnpm
+          test -d node_modules
+          make test
