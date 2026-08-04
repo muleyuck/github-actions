@@ -1,2 +1,80 @@
 # github-actions
-Shared Workflows and Composite Action
+
+Shared GitHub Actions library for the muleyuck repositories.
+
+- **Reusable Workflow** (`.github/workflows/`) — CI/CD templates, one per project type
+- **Composite Action** (`actions/`) — the technical parts the workflows are built from
+
+Consumers reference the `v1` tag. Never reference `main`.
+
+```yaml
+name: unit-test
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions: {}
+jobs:
+  ci:
+    permissions:
+      contents: read
+    uses: muleyuck/github-actions/.github/workflows/ci-rust.yml@v1
+```
+
+Declare `permissions` on the calling job. A reusable workflow can only
+downgrade the token it is handed, so the call fails validation without it.
+See the permissions section of [docs/usage.md](docs/usage.md) for what each
+workflow requires.
+
+For the full input reference and the migration steps, see
+[docs/usage.md](docs/usage.md).
+
+## Reusable workflows
+
+| File | Purpose |
+| --- | --- |
+| `ci-rust.yml` | Lint, build and test a Rust project |
+| `ci-go.yml` | Lint, build and test a Go project |
+| `ci-node-pnpm.yml` | Lint, build and test a Node.js project that uses pnpm |
+| `ci-lua-neovim.yml` | Run luacheck, stylua and the test suite of a Neovim plugin |
+| `release-please.yml` | Create the release PR and tag the release with release-please |
+
+## Composite actions
+
+| Path | Purpose |
+| --- | --- |
+| `actions/common/release-please` | Run release-please itself |
+| `actions/rust/setup` | Install the Rust toolchain and restore the cargo cache |
+| `actions/go/setup` | Install Go and golangci-lint and restore the module cache |
+| `actions/node/setup` | Install Node and pnpm, cache the store, install dependencies |
+| `actions/lua/luacheck` | Install and run luacheck |
+| `actions/lua/stylua` | Check formatting with stylua |
+| `actions/lua/setup-neovim` | Install Neovim for the test suite |
+
+## Versioning
+
+`v1` is a moving tag. After cutting a `v1.x.y`, move `v1` to that commit.
+
+```
+git tag -a v1.2.0 -m "v1.2.0"
+git tag -fa v1 -m "v1 -> v1.2.0"
+git push origin v1.2.0
+git push origin v1 --force
+```
+
+A reusable workflow references a composite action as
+`muleyuck/github-actions/actions/<path>@v1`, so moving `v1` switches the
+workflow and the action together. `tests/assert-action-refs.sh` enforces that
+pinning in CI.
+
+## Development
+
+```
+mise install
+mise exec -- actionlint
+./tests/assert-action-refs.sh
+```
+
+On push and pull request, `validate.yml` runs actionlint, the reference check,
+and the composite actions against the minimal projects under `tests/fixtures/`.
