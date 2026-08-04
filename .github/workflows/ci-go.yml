@@ -1,0 +1,41 @@
+name: ci-go
+
+on:
+  workflow_call:
+    inputs:
+      test-command:
+        description: 'Command that runs the tests'
+        type: string
+        required: false
+        default: 'make test'
+      install-args:
+        description: 'Arguments passed to `mise install`'
+        type: string
+        required: false
+        default: 'go golangci-lint'
+
+permissions: {}
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  ci:
+    name: Lint Build Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: muleyuck/github-actions/actions/go/setup@v1
+        with:
+          install-args: ${{ inputs.install-args }}
+
+      - name: Run tests
+        env:
+          TEST_COMMAND: ${{ inputs.test-command }}
+        run: bash -c "$TEST_COMMAND"
