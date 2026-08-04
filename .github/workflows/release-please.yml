@@ -1,0 +1,72 @@
+name: release-please
+
+on:
+  workflow_call:
+    inputs:
+      config-file:
+        description: 'Path to the release-please config file'
+        type: string
+        required: false
+        default: '.github/release-please-config.json'
+      manifest-file:
+        description: 'Path to the release-please manifest file'
+        type: string
+        required: false
+        default: '.github/.release-please-manifest.json'
+      update-stable-tag:
+        description: 'Move the stable tag to the release commit when a release is created (for Neovim plugins)'
+        type: boolean
+        required: false
+        default: false
+    outputs:
+      release_created:
+        description: 'Whether a release was created'
+        value: ${{ jobs.release-please.outputs.release_created }}
+      tag_name:
+        description: 'Name of the created tag'
+        value: ${{ jobs.release-please.outputs.tag_name }}
+      version:
+        description: 'Version that was released'
+        value: ${{ jobs.release-please.outputs.version }}
+
+permissions: {}
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  release-please:
+    name: release-please
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - id: release
+        uses: muleyuck/github-actions/actions/common/release-please@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: ${{ inputs.config-file }}
+          manifest-file: ${{ inputs.manifest-file }}
+
+      - name: Checkout for stable tag
+        if: ${{ inputs.update-stable-tag && steps.release.outputs.release_created == 'true' }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Update stable tag
+        if: ${{ inputs.update-stable-tag && steps.release.outputs.release_created == 'true' }}
+        env:
+          RELEASE_SHA: ${{ steps.release.outputs.sha }}
+          TAG_NAME: ${{ steps.release.outputs.tag_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -fa stable "$RELEASE_SHA" -m "Current stable release: $TAG_NAME"
+          git push origin stable --force
