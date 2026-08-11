@@ -1,39 +1,25 @@
 #!/usr/bin/env bash
-# Assert that every reference to the shared Composite Actions resolves and is pinned.
-#
-# 1. The relative references `./actions/...` used by validate.yml must point at a
-#    directory that actually contains an action.yml.
-# 2. The absolute references `muleyuck/github-actions/actions/...@ref` used by the
-#    reusable workflows must be pinned at @v1 and must point at an existing action.
+# actionlint does not verify action reference paths at all, and the reusable
+# workflows are never executed here, so a typo in one of them would only
+# surface in the consumer repositories. Check both forms of reference instead:
+# each must resolve to an action.yml, and remote self-references must be at @v1.
 set -euo pipefail
-
-repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$repo_root"
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 status=0
-
-while read -r path; do
-  [ -z "$path" ] && continue
-  dir="${path#./}"
-  if [ ! -f "${dir}/action.yml" ]; then
-    echo "::error::local action not found: ${dir}/action.yml"
-    status=1
-  fi
-done < <(grep -rhoE '\./actions/[a-z0-9/-]+' .github/workflows | sort -u)
+fail() {
+  echo "::error::$1"
+  status=1
+}
 
 while read -r ref; do
-  [ -z "$ref" ] && continue
-  version="${ref##*@}"
-  dir="${ref%@*}"
-  dir="${dir#muleyuck/github-actions/}"
-  if [ "$version" != "v1" ]; then
-    echo "::error::${ref} must be pinned at @v1"
-    status=1
+  dir=${ref#./}
+  dir=${dir#muleyuck/github-actions/}
+  if [[ $ref == *@* ]]; then
+    [[ ${ref##*@} == v1 ]] || fail "$ref must be pinned at @v1"
+    dir=${dir%@*}
   fi
-  if [ ! -f "${dir}/action.yml" ]; then
-    echo "::error::${ref} points at a missing action: ${dir}/action.yml"
-    status=1
-  fi
-done < <(grep -rhoE 'muleyuck/github-actions/actions/[a-z0-9/-]+@[A-Za-z0-9._-]+' .github/workflows | sort -u)
+  [[ -f $dir/action.yml ]] || fail "$ref does not resolve to $dir/action.yml"
+done < <(grep -rhoE '(\./|muleyuck/github-actions/)actions/[a-z0-9/-]+(@[A-Za-z0-9._-]+)?' .github/workflows | sort -u)
 
 exit $status
