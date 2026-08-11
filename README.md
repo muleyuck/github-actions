@@ -22,13 +22,9 @@ jobs:
     uses: muleyuck/github-actions/.github/workflows/ci-rust.yml@v1
 ```
 
-Declare `permissions` on the calling job. A reusable workflow can only
-downgrade the token it is handed, so the call fails validation without it.
-See the permissions section of [docs/usage.md](docs/usage.md) for what each
-workflow requires.
-
-For the full input reference and the migration steps, see
-[docs/usage.md](docs/usage.md).
+Declare `permissions` on the calling job — a reusable workflow can only
+downgrade the token it is handed. See [docs/usage.md](docs/usage.md) for the
+input reference, the permissions each workflow needs, and the migration steps.
 
 ## Reusable workflows
 
