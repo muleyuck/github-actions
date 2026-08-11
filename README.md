@@ -57,6 +57,12 @@ the workflow then moves `v1` onto that commit. Nothing is tagged by hand.
 Backwards compatible changes therefore reach every consumer without a pull
 request. The gate for them is `validate.yml`, not review in each repository.
 
+Only commit types that appear in the changelog produce a release, so a change
+consumers actually run has to be committed as `feat`, `fix`, `perf` or `deps`.
+release-please skips the release entirely when the changelog would be empty,
+which leaves `v1` where it is — the right outcome for `ci`, `style`, `docs`,
+`refactor` and `chore`, and a silent no-op for anything else.
+
 Raise the major version only for a breaking change — removing or renaming an
 input or output, changing a default, or requiring a permission the calling job
 does not already grant. Leave `v1` where it is, tag `v2`, and every consumer

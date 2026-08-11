@@ -17,6 +17,10 @@
           "section": "Performance Improvements"
         },
         {
+          "type": "deps",
+          "section": "Dependencies"
+        },
+        {
           "type": "revert",
           "section": "Reverts"
         }
