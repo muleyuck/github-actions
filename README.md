@@ -54,19 +54,23 @@ For the full input reference and the migration steps, see
 
 ## Versioning
 
-`v1` is a moving tag. After cutting a `v1.x.y`, move `v1` to that commit.
+`v1` is a moving tag. `release.yml` runs after `validate.yml` succeeds on
+`main`: release-please cuts the `v1.x.y` tag from the conventional commits, and
+the workflow then moves `v1` onto that commit. Nothing is tagged by hand.
 
-```
-git tag -a v1.2.0 -m "v1.2.0"
-git tag -fa v1 -m "v1 -> v1.2.0"
-git push origin v1.2.0
-git push origin v1 --force
-```
+Backwards compatible changes therefore reach every consumer without a pull
+request. The gate for them is `validate.yml`, not review in each repository.
+
+Raise the major version only for a breaking change — removing or renaming an
+input or output, changing a default, or requiring a permission the calling job
+does not already grant. Leave `v1` where it is, tag `v2`, and every consumer
+gets a Dependabot pull request to move from `@v1` to `@v2`.
 
 A reusable workflow references a composite action as
 `muleyuck/github-actions/actions/<path>@v1`, so moving `v1` switches the
 workflow and the action together. `tests/assert-action-refs.sh` enforces that
-pinning in CI.
+pinning in CI, and those references have to be rewritten when the major
+version changes.
 
 ## Development
 

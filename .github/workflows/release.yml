@@ -1,0 +1,50 @@
+name: release
+
+on:
+  workflow_run:
+    workflows:
+      - validate
+    types:
+      - completed
+    branches:
+      - main
+
+permissions: {}
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  release-please:
+    name: release-please
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      # Calls the composite action directly instead of the release-please.yml
+      # reusable workflow: that workflow resolves the action through @v1, which
+      # does not exist until this workflow has published it once.
+      - id: release
+        uses: ./actions/common/release-please
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Move the major tag
+        if: ${{ steps.release.outputs.release_created == 'true' }}
+        env:
+          RELEASE_SHA: ${{ steps.release.outputs.sha }}
+          TAG_NAME: ${{ steps.release.outputs.tag_name }}
+        run: |
+          major="v${TAG_NAME#v}"
+          major="${major%%.*}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -fa "$major" "$RELEASE_SHA" -m "$major -> $TAG_NAME"
+          git push origin "$major" --force
