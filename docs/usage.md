@@ -20,6 +20,7 @@ validation before a single step executes.
 | Workflow | permissions required on the calling job |
 | --- | --- |
 | `ci-rust.yml` / `ci-go.yml` / `ci-node-pnpm.yml` / `ci-lua-neovim.yml` | `contents: read` |
+| `audit-rust.yml` / `audit-go.yml` / `audit-node-pnpm.yml` | `contents: read` |
 | `release-please.yml` | `contents: write` and `pull-requests: write` |
 
 ## ci-rust.yml
@@ -103,6 +104,42 @@ jobs:
 Neovim plugins carry no `mise.toml`, so this is the one template that does not
 use mise.
 
+## audit-rust.yml, audit-go.yml, audit-node-pnpm.yml
+
+| input | workflow | type | default | description |
+| --- | --- | --- | --- | --- |
+| `audit-level` | `audit-node-pnpm.yml` | string | `high` | Lowest severity that fails the check |
+| `go-package` | `audit-go.yml` | string | `./...` | Package pattern passed to govulncheck |
+
+`audit-rust.yml` takes no inputs.
+
+An audit result changes when a new advisory is published, not only when the
+code changes, so give these a schedule. A reusable workflow cannot carry its
+own `schedule:` — the trigger has to be declared by the caller.
+
+```yaml
+name: audit
+on:
+  schedule:
+    - cron: "0 0 * * 1"
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions: {}
+jobs:
+  audit:
+    permissions:
+      contents: read
+    uses: muleyuck/github-actions/.github/workflows/audit-rust.yml@v1
+```
+
+Keeping the audit out of `ci-*.yml` is deliberate. It goes red for reasons that
+have nothing to do with the change under review, so whether it blocks a merge
+should be a separate decision.
+
+`audit-rust.yml` builds cargo-audit from source, which takes around two
+minutes. The other two install nothing beyond the toolchain.
+
 ## release-please.yml
 
 | input | type | default | description |
@@ -175,12 +212,14 @@ no release is created, so `!= 'false'` does not work.
 | `ci-lua-neovim.yml` | conflux.nvim, jikan.nvim |
 | `ci-node-pnpm.yml` | cmdrop, SnapLayer, Text2QR, mermove-for-github |
 | `ci-go.yml` | gh-issue-clone, linippet, Go-Echo-Windows-Service |
+| `audit-rust.yml` | jqc, edio |
+| `audit-node-pnpm.yml` | SnapLayer, and cmdrop, Text2QR, mermove-for-github, which have no audit today |
+| `audit-go.yml` | linippet, and gh-issue-clone, Go-Echo-Windows-Service, which have no audit today |
 | `release-please.yml` | conflux.nvim, jikan.nvim, edio, jqc, linippet, SnapLayer, mermove-for-github, Go-Echo-Windows-Service |
 
 ## Out of scope for now
 
 - `publish-npm` and `publish-crates` — no repository publishes to either today
-- `audit-*` and `vulnerability-check` — SnapLayer, edio, jqc, linippet
 - `deploy-pages`, `deploy-cloudflare`, `deploy-ecs`
 - Browser extension releases (SnapLayer, Text2QR, mermove-for-github)
 - goreleaser releases (linippet, Go-Echo-Windows-Service)
