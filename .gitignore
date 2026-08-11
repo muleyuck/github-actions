@@ -1,0 +1,4 @@
+# Written by the fixture projects under tests/fixtures when the checks run locally.
+/tests/fixtures/rust/target/
+/tests/fixtures/node-pnpm/node_modules/
+/.pnpm-store/
