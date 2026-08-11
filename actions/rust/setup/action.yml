@@ -1,15 +1,15 @@
 name: rust-setup
-description: 'Install the Rust toolchain from mise.toml and restore the cargo cache'
+description: "Install the Rust toolchain from mise.toml and restore the cargo cache"
 
 inputs:
   install-args:
-    description: 'Arguments passed to `mise install`. Defaults to rust only, so slow-to-build tools such as cargo-dist are skipped'
+    description: "Arguments passed to `mise install`. Defaults to rust only, so slow-to-build tools such as cargo-dist are skipped"
     required: false
-    default: 'rust'
+    default: "rust"
   working-directory:
-    description: 'Directory that holds mise.toml'
+    description: "Directory that holds mise.toml"
     required: false
-    default: '.'
+    default: "."
 
 runs:
   using: composite

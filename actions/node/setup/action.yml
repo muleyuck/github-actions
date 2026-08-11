@@ -1,15 +1,15 @@
 name: node-setup
-description: 'Install Node.js and pnpm from mise.toml, cache the pnpm store and install dependencies'
+description: "Install Node.js and pnpm from mise.toml, cache the pnpm store and install dependencies"
 
 inputs:
   install-args:
-    description: 'Arguments passed to `mise install`'
+    description: "Arguments passed to `mise install`"
     required: false
-    default: 'node pnpm'
+    default: "node pnpm"
   working-directory:
-    description: 'Directory that holds mise.toml and pnpm-lock.yaml'
+    description: "Directory that holds mise.toml and pnpm-lock.yaml"
     required: false
-    default: '.'
+    default: "."
 
 runs:
   using: composite

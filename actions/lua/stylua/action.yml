@@ -1,18 +1,18 @@
 name: stylua
-description: 'Check Lua formatting with stylua'
+description: "Check Lua formatting with stylua"
 
 inputs:
   paths:
-    description: 'Paths to check, space separated'
+    description: "Paths to check, space separated"
     required: false
-    default: 'lua/ plugin/'
+    default: "lua/ plugin/"
   token:
-    description: 'GitHub token used to download the stylua release'
+    description: "GitHub token used to download the stylua release"
     required: true
   version:
-    description: 'Version of stylua to use'
+    description: "Version of stylua to use"
     required: false
-    default: 'latest'
+    default: "latest"
 
 runs:
   using: composite

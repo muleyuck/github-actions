@@ -4,15 +4,15 @@ on:
   workflow_call:
     inputs:
       test-command:
-        description: 'Command that runs the tests'
+        description: "Command that runs the tests"
         type: string
         required: false
-        default: 'make test'
+        default: "make test"
       install-args:
-        description: 'Arguments passed to `mise install`'
+        description: "Arguments passed to `mise install`"
         type: string
         required: false
-        default: 'rust'
+        default: "rust"
 
 permissions: {}
 defaults:

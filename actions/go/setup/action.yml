@@ -1,15 +1,15 @@
 name: go-setup
-description: 'Install Go and golangci-lint from mise.toml and restore the module and build caches'
+description: "Install Go and golangci-lint from mise.toml and restore the module and build caches"
 
 inputs:
   install-args:
-    description: 'Arguments passed to `mise install`. Defaults to go and golangci-lint only'
+    description: "Arguments passed to `mise install`. Defaults to go and golangci-lint only"
     required: false
-    default: 'go golangci-lint'
+    default: "go golangci-lint"
   working-directory:
-    description: 'Directory that holds mise.toml and go.mod'
+    description: "Directory that holds mise.toml and go.mod"
     required: false
-    default: '.'
+    default: "."
 
 runs:
   using: composite

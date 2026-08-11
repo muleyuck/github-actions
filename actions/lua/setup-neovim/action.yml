@@ -1,11 +1,11 @@
 name: setup-neovim
-description: 'Install Neovim for running the test suite'
+description: "Install Neovim for running the test suite"
 
 inputs:
   version:
-    description: 'Version of Neovim to install'
+    description: "Version of Neovim to install"
     required: false
-    default: 'stable'
+    default: "stable"
 
 runs:
   using: composite

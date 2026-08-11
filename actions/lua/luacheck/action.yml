@@ -1,15 +1,15 @@
 name: luacheck
-description: 'Install luacheck and run static analysis over the Lua sources'
+description: "Install luacheck and run static analysis over the Lua sources"
 
 inputs:
   paths:
-    description: 'Paths to analyse, space separated, relative to working-directory'
+    description: "Paths to analyse, space separated, relative to working-directory"
     required: false
-    default: 'lua/ plugin/'
+    default: "lua/ plugin/"
   working-directory:
-    description: 'Directory to run luacheck in. .luacheckrc is searched from here upwards'
+    description: "Directory to run luacheck in. .luacheckrc is searched from here upwards"
     required: false
-    default: '.'
+    default: "."
 
 runs:
   using: composite

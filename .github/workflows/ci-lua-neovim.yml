@@ -4,20 +4,20 @@ on:
   workflow_call:
     inputs:
       lua-paths:
-        description: 'Paths for luacheck and stylua, space separated'
+        description: "Paths for luacheck and stylua, space separated"
         type: string
         required: false
-        default: 'lua/ plugin/'
+        default: "lua/ plugin/"
       test-command:
-        description: 'Command that runs the tests'
+        description: "Command that runs the tests"
         type: string
         required: false
-        default: 'make test'
+        default: "make test"
       neovim-version:
-        description: 'Version of Neovim used for the tests'
+        description: "Version of Neovim used for the tests"
         type: string
         required: false
-        default: 'stable'
+        default: "stable"
 
 permissions: {}
 defaults:
