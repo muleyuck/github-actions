@@ -1,0 +1,33 @@
+name: audit-go
+
+on:
+  workflow_call:
+    inputs:
+      go-package:
+        description: "Package pattern passed to govulncheck"
+        type: string
+        required: false
+        default: "./..."
+
+permissions: {}
+
+jobs:
+  audit:
+    name: Audit dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      # Checking out here rather than letting govulncheck-action do it, which is
+      # its default, keeps the token out of .git/config while `go install` pulls
+      # govulncheck from the module proxy.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: golang/govulncheck-action@032d45514ae346b1db93c04b0c90b841c370344f # v1.1.0
+        with:
+          repo-checkout: false
+          go-version-file: go.mod
+          go-package: ${{ inputs.go-package }}
