@@ -17,7 +17,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: JohnnyMorganz/stylua-action@76fd70c03e6340ceaf673366712db9b20560b402 # v2.0.0
+    - uses: JohnnyMorganz/stylua-action@76fd70c03e6340ceaf673366712db9b20560b402 # v5.0.0
       with:
         token: ${{ inputs.token }}
         version: ${{ inputs.version }}
