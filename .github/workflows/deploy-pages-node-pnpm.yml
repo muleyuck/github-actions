@@ -1,0 +1,66 @@
+name: deploy-pages-node-pnpm
+
+on:
+  workflow_call:
+    inputs:
+      build-command:
+        description: "Command that builds the static site"
+        type: string
+        required: false
+        default: "pnpm build"
+      artifact-path:
+        description: "Directory uploaded to GitHub Pages"
+        type: string
+        required: false
+        default: "dist"
+      install-args:
+        description: "Arguments passed to `mise install`"
+        type: string
+        required: false
+        default: "node pnpm"
+    outputs:
+      page-url:
+        description: "URL the site was deployed to"
+        value: ${{ jobs.deploy.outputs.page-url }}
+
+permissions: {}
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page-url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: muleyuck/github-actions/actions/node/setup@v1
+        with:
+          install-args: ${{ inputs.install-args }}
+
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Build the site
+        env:
+          BUILD_COMMAND: ${{ inputs.build-command }}
+        run: bash -c "$BUILD_COMMAND"
+
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: ${{ inputs.artifact-path }}
+
+      - id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0

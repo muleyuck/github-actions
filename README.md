@@ -34,6 +34,7 @@ input reference, the permissions each workflow needs, and the migration steps.
 | `ci-go.yml` | Lint, build and test a Go project |
 | `ci-node-pnpm.yml` | Lint, build and test a Node.js project that uses pnpm |
 | `ci-lua-neovim.yml` | Run luacheck, stylua and the test suite of a Neovim plugin |
+| `deploy-pages-node-pnpm.yml` | Build a static site with pnpm and deploy it to GitHub Pages |
 | `audit-rust.yml` | Check the cargo dependencies against the RustSec advisories |
 | `audit-go.yml` | Run govulncheck over the Go packages |
 | `audit-node-pnpm.yml` | Run pnpm audit over the dependency tree |
