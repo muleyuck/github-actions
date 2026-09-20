@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "timezone": "Asia/Tokyo",
+  "schedule": ["on saturday"],
+  "reviewers": ["muleyuck"],
+  "prConcurrentLimit": 10,
+  "semanticCommits": "enabled",
+  "semanticCommitType": "deps",
+  "semanticCommitScope": "",
+  "automergeType": "pr",
+  "automergeStrategy": "squash",
+  "dependencyDashboard": true,
+  "ignorePaths": ["**/node_modules/**", "**/bower_components/**", "tests/fixtures/**"],
+  "packageRules": [
+    { "matchManagers": ["github-actions"], "groupName": "github-actions dependencies" },
+    { "matchManagers": ["github-actions"], "matchUpdateTypes": ["patch", "minor", "digest"], "automerge": true },
+    { "matchManagers": ["mise"], "matchUpdateTypes": ["patch", "minor"], "automerge": true }
+  ]
+}
