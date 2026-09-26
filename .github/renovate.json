@@ -10,6 +10,8 @@
   "automergeType": "pr",
   "automergeStrategy": "squash",
   "dependencyDashboard": true,
+  "minimumReleaseAge": "3 days",
+  "internalChecksFilter": "strict",
   "ignorePaths": ["**/node_modules/**", "**/bower_components/**", "tests/fixtures/**"],
   "packageRules": [
     { "matchManagers": ["github-actions"], "groupName": "github-actions dependencies" },
