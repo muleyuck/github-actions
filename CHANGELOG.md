@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/muleyuck/github-actions/compare/v1.2.0...v1.2.1) (2026-10-03)
+
+
+### Dependencies
+
+* update jdx/mise-action action to v5 ([#9](https://github.com/muleyuck/github-actions/issues/9)) ([20b1eff](https://github.com/muleyuck/github-actions/commit/20b1eff2ff3d6fd4c57413cc7afcac7e5857e47d))
+
 ## [1.2.0](https://github.com/muleyuck/github-actions/compare/v1.1.0...v1.2.0) (2026-09-05)
 
 
