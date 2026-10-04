@@ -13,6 +13,11 @@ on:
         type: string
         required: false
         default: ".github/.release-please-manifest.json"
+      path:
+        description: "Path of the released package in the config. release-please prefixes its outputs with it unless it is the root"
+        type: string
+        required: false
+        default: "."
       update-stable-tag:
         description: "Move the stable tag to the release commit when a release is created (for Neovim plugins)"
         type: boolean
@@ -53,6 +58,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           config-file: ${{ inputs.config-file }}
           manifest-file: ${{ inputs.manifest-file }}
+          path: ${{ inputs.path }}
 
       - name: Checkout for stable tag
         if: ${{ inputs.update-stable-tag && steps.release.outputs.release_created == 'true' }}
