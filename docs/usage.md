@@ -30,6 +30,7 @@ validation before a single step executes.
 | --- | --- | --- | --- |
 | `test-command` | string | `make test` | Command that runs the tests |
 | `install-args` | string | `rust` | Arguments passed to `mise install` |
+| `runs-on` | string | `ubuntu-latest` | Runner label the job runs on |
 
 ```yaml
 name: unit-test
@@ -204,6 +205,7 @@ Pages actions written out in place.
 | --- | --- | --- | --- |
 | `config-file` | string | `.github/release-please-config.json` | Config file |
 | `manifest-file` | string | `.github/.release-please-manifest.json` | Manifest file |
+| `path` | string | `.` | Package path whose outputs are returned |
 | `update-stable-tag` | boolean | `false` | Move the `stable` tag on release |
 
 | output | description |
@@ -243,6 +245,18 @@ jobs:
     uses: muleyuck/github-actions/.github/workflows/release-please.yml@v1
     with:
       update-stable-tag: true
+```
+
+When the released package is not at the repository root, release-please
+prefixes its outputs with the package path. Set `path` to that package's key in
+`packages` of the config file, written exactly the same way — `./packages/foo`
+or `packages/foo/` for a `packages/foo` key matches nothing, and the outputs
+come back empty without an error:
+
+```yaml
+    uses: muleyuck/github-actions/.github/workflows/release-please.yml@v1
+    with:
+      path: packages/foo
 ```
 
 `secrets: inherit` is not needed. `GITHUB_TOKEN` is passed to a reusable

@@ -14,7 +14,7 @@ inputs:
     required: false
     default: ".github/.release-please-manifest.json"
   path:
-    description: "Path of the released package in the config. release-please prefixes its outputs with it unless it is the root"
+    description: "Key of the released package in `packages` of the config, written exactly as there. release-please prefixes its outputs with it unless it is the root"
     required: false
     default: "."
 
