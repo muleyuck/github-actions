@@ -13,20 +13,24 @@ inputs:
     description: "Path to the release-please manifest file"
     required: false
     default: ".github/.release-please-manifest.json"
+  path:
+    description: "Key of the released package in `packages` of the config, written exactly as there. release-please prefixes its outputs with it unless it is the root"
+    required: false
+    default: "."
 
 outputs:
   release_created:
     description: "true when a release was created"
-    value: ${{ steps.release.outputs.release_created }}
+    value: ${{ inputs.path == '.' && steps.release.outputs.release_created || steps.release.outputs[format('{0}--release_created', inputs.path)] }}
   tag_name:
     description: "Name of the created tag"
-    value: ${{ steps.release.outputs.tag_name }}
+    value: ${{ inputs.path == '.' && steps.release.outputs.tag_name || steps.release.outputs[format('{0}--tag_name', inputs.path)] }}
   version:
     description: "Version that was released"
-    value: ${{ steps.release.outputs.version }}
+    value: ${{ inputs.path == '.' && steps.release.outputs.version || steps.release.outputs[format('{0}--version', inputs.path)] }}
   sha:
     description: "Commit SHA the release points at"
-    value: ${{ steps.release.outputs.sha }}
+    value: ${{ inputs.path == '.' && steps.release.outputs.sha || steps.release.outputs[format('{0}--sha', inputs.path)] }}
 
 runs:
   using: composite
