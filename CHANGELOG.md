@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/muleyuck/github-actions/compare/v1.2.0...v1.3.0) (2026-10-05)
+
+
+### Features
+
+* ci-rust の runner 指定と、ルート外パッケージの release-please outputs 対応 ([#11](https://github.com/muleyuck/github-actions/issues/11)) ([5b0223c](https://github.com/muleyuck/github-actions/commit/5b0223c5ce62d0b68c15ee2ed6c6a52dfbb7e646))
+
+
+### Dependencies
+
+* update jdx/mise-action action to v5 ([#9](https://github.com/muleyuck/github-actions/issues/9)) ([20b1eff](https://github.com/muleyuck/github-actions/commit/20b1eff2ff3d6fd4c57413cc7afcac7e5857e47d))
+
 ## [1.2.0](https://github.com/muleyuck/github-actions/compare/v1.1.0...v1.2.0) (2026-09-05)
 
 
