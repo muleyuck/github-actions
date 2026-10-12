@@ -1,0 +1,75 @@
+name: homebrew-publish
+description: "Render a Homebrew formula or cask and push it to the tap with a GitHub App token. macOS runners only; call it after the archives are attached to the release"
+
+inputs:
+  template:
+    description: "Template path, relative to the workspace. @VERSION@ and each @NAME@ from sha256 are replaced"
+    required: true
+  tap-path:
+    description: "Path of the file inside the tap: Formula/<name>.rb or Casks/<name>.rb"
+    required: true
+  version:
+    description: "Replaces @VERSION@; also used in the tap commit message"
+    required: true
+  sha256:
+    description: "Newline-separated NAME=path lines. The SHA-256 of each file (relative to the workspace) replaces @NAME@"
+    required: false
+    default: ""
+  client-id:
+    description: "Client ID of a GitHub App that can write contents of muleyuck/homebrew-tap"
+    required: true
+  private-key:
+    description: "Private key of that GitHub App"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    # Runs the script the render action runs, from this action's own ref, rather
+    # than `uses:` the render action: @v1 would run whatever v1 points at, ./
+    # resolves against the caller's workspace, and actionlint 1.7.12 rejects the
+    # same-ref form $/actions/homebrew/render.
+    - id: render
+      shell: bash
+      env:
+        TEMPLATE: ${{ inputs.template }}
+        TAP_PATH: ${{ inputs.tap-path }}
+        VERSION: ${{ inputs.version }}
+        SHA256: ${{ inputs.sha256 }}
+      run: bash "$GITHUB_ACTION_PATH/../lib/render.sh"
+
+    - id: token
+      uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+      with:
+        client-id: ${{ inputs.client-id }}
+        private-key: ${{ inputs.private-key }}
+        owner: muleyuck
+        repositories: homebrew-tap
+        permission-contents: write
+
+    # actions/checkout only accepts paths under the workspace. Credentials are
+    # kept so the push below can use the token.
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        repository: muleyuck/homebrew-tap
+        token: ${{ steps.token.outputs.token }}
+        path: .homebrew-tap
+
+    - shell: bash
+      working-directory: .homebrew-tap
+      env:
+        RENDERED: ${{ steps.render.outputs.path }}
+        TAP_PATH: ${{ inputs.tap-path }}
+        VERSION: ${{ inputs.version }}
+      run: |
+        mkdir -p "$(dirname "$TAP_PATH")"
+        cp "$RENDERED" "$TAP_PATH"
+        git add "$TAP_PATH"
+        if git diff --cached --quiet; then
+          echo "$TAP_PATH already up to date"
+          exit 0
+        fi
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git commit -m "$(basename "$TAP_PATH" .rb) $VERSION"
+        git push
