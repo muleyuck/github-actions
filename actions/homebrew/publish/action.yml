@@ -25,18 +25,16 @@ inputs:
 runs:
   using: composite
   steps:
-    # Runs the script the render action runs, from this action's own ref, rather
-    # than `uses:` the render action: @v1 would run whatever v1 points at, ./
-    # resolves against the caller's workspace, and actionlint 1.7.12 rejects the
-    # same-ref form $/actions/homebrew/render.
+    # $/ resolves to this repository at the commit this action runs from, so
+    # publish always runs the render of its own ref. @v1 would run whatever v1
+    # points at, and ./ resolves against the caller's workspace.
     - id: render
-      shell: bash
-      env:
-        TEMPLATE: ${{ inputs.template }}
-        TAP_PATH: ${{ inputs.tap-path }}
-        VERSION: ${{ inputs.version }}
-        SHA256: ${{ inputs.sha256 }}
-      run: bash "$GITHUB_ACTION_PATH/../lib/render.sh"
+      uses: $/actions/homebrew/render
+      with:
+        template: ${{ inputs.template }}
+        tap-path: ${{ inputs.tap-path }}
+        version: ${{ inputs.version }}
+        sha256: ${{ inputs.sha256 }}
 
     - id: token
       uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
