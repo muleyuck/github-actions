@@ -31,4 +31,4 @@ runs:
         TAP_PATH: ${{ inputs.tap-path }}
         VERSION: ${{ inputs.version }}
         SHA256: ${{ inputs.sha256 }}
-      run: bash "$GITHUB_ACTION_PATH/../lib/render.sh"
+      run: bash "$GITHUB_ACTION_PATH/render.sh"
