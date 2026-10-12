@@ -131,3 +131,49 @@ jobs:
           command -v go
           command -v golangci-lint
           make test
+
+  fixture-homebrew:
+    name: fixture (homebrew)
+    runs-on: macos-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Runs before the success case: both write the same rendered path.
+      - id: missing
+        uses: ./actions/homebrew/render
+        continue-on-error: true
+        with:
+          template: tests/fixtures/homebrew/Formula/example.rb.in
+          tap-path: Formula/example.rb
+          version: 1.2.3
+          sha256: |
+            SHA256_A=tests/fixtures/homebrew/dist/example-a.txt
+
+      - name: Assert a missing checksum fails without writing the formula
+        env:
+          OUTCOME: ${{ steps.missing.outcome }}
+          RENDERED: ${{ steps.missing.outputs.path }}
+        run: |
+          test "$OUTCOME" = failure
+          test -z "$RENDERED"
+          test ! -e "$RUNNER_TEMP/homebrew/Formula/example.rb"
+
+      - id: render
+        uses: ./actions/homebrew/render
+        with:
+          template: tests/fixtures/homebrew/Formula/example.rb.in
+          tap-path: Formula/example.rb
+          version: 1.2.3
+          sha256: |
+            SHA256_A=tests/fixtures/homebrew/dist/example-a.txt
+            SHA256_B=tests/fixtures/homebrew/dist/example-b.txt
+
+      - name: Assert the rendered formula
+        env:
+          RENDERED: ${{ steps.render.outputs.path }}
+        run: diff tests/fixtures/homebrew/expected.rb "$RENDERED"

@@ -264,7 +264,8 @@ workflow automatically.
 
 Follow-up jobs — goreleaser, the browser extension zip release and so on —
 stay in the consumer repository and read this workflow's outputs through
-`needs`.
+`needs`. A job that publishes to the Homebrew tap ends with
+[`actions/homebrew/publish`](#actionshomebrewpublish).
 
 ```yaml
   goreleaser:
@@ -275,6 +276,67 @@ stay in the consumer repository and read this workflow's outputs through
 
 Compare against `'true'`. `release_created` is unset rather than `'false'` when
 no release is created, so `!= 'false'` does not work.
+
+## actions/homebrew/publish
+
+Renders a formula or cask template and pushes it to the tap,
+muleyuck/homebrew-tap. The consumer
+keeps building the archives and attaching them to the release; publish does
+the rest.
+
+- **macOS runners only.** It runs `brew style` on the rendered file.
+- **Call it after the archives are attached to the release**, so the tap never
+  points at a missing file.
+- It needs a GitHub App that can write contents of the tap. It does not use
+  `GITHUB_TOKEN`, so it adds nothing to the calling job's `permissions`.
+- The tap is checked out to `.homebrew-tap` in the workspace and left there.
+
+| input | required | default | description |
+| --- | --- | --- | --- |
+| `template` | yes | | Template path. `@VERSION@` and each `@NAME@` from `sha256` are replaced |
+| `tap-path` | yes | | `Formula/<name>.rb` or `Casks/<name>.rb` |
+| `version` | yes | | Replaces `@VERSION@`; the tap commit is `<name> <version>` |
+| `sha256` | no | `""` | Newline-separated `NAME=path`; each file's SHA-256 replaces `@NAME@` |
+| `client-id` | yes | | GitHub App client ID |
+| `private-key` | yes | | GitHub App private key |
+
+It fails before touching the tap when a `sha256` line is not `NAME=path`, a
+file is missing, the template has no `@NAME@` for a given name, or a
+placeholder is left without a value.
+
+A formula with one archive per platform (jqc):
+
+```yaml
+      - uses: muleyuck/github-actions/actions/homebrew/publish@v1
+        with:
+          template: packaging/jqc.rb.in
+          tap-path: Formula/jqc.rb
+          version: ${{ env.VERSION }}
+          sha256: |
+            SHA256_AARCH64_APPLE_DARWIN=dist/jqc-aarch64-apple-darwin.tar.xz
+            SHA256_X86_64_APPLE_DARWIN=dist/jqc-x86_64-apple-darwin.tar.xz
+            SHA256_AARCH64_UNKNOWN_LINUX_GNU=dist/jqc-aarch64-unknown-linux-gnu.tar.xz
+            SHA256_X86_64_UNKNOWN_LINUX_GNU=dist/jqc-x86_64-unknown-linux-gnu.tar.xz
+          client-id: ${{ secrets.TAP_APP_CLIENT_ID }}
+          private-key: ${{ secrets.TAP_APP_PRIVATE_KEY }}
+```
+
+A cask (turnray):
+
+```yaml
+      - uses: muleyuck/github-actions/actions/homebrew/publish@v1
+        with:
+          template: packaging/turnray.rb.in
+          tap-path: Casks/turnray.rb
+          version: ${{ env.VERSION }}
+          sha256: SHA256=target/turnray-${{ env.VERSION }}.zip
+          client-id: ${{ secrets.TAP_APP_CLIENT_ID }}
+          private-key: ${{ secrets.TAP_APP_PRIVATE_KEY }}
+```
+
+`actions/homebrew/render` is the first half on its own (render and
+`brew style`, output `path`); validate.yml tests it with
+`tests/fixtures/homebrew`.
 
 ## Migration targets
 
@@ -289,6 +351,7 @@ no release is created, so `!= 'false'` does not work.
 | `audit-go.yml` | linippet, and gh-issue-clone, which have no audit today |
 | `release-please.yml` | conflux.nvim, jikan.nvim, edio, jqc, linippet, SnapLayer, mermove-for-github |
 | `deploy-pages-node-pnpm.yml` | cmdrop |
+| `actions/homebrew/publish` | jqc, turnray |
 
 ## Out of scope for now
 

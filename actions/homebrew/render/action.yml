@@ -1,0 +1,34 @@
+name: homebrew-render
+description: "Render a Homebrew formula or cask template with the version and archive checksums, then check it with brew style. macOS runners only"
+
+inputs:
+  template:
+    description: "Template path, relative to the workspace. @VERSION@ and each @NAME@ from sha256 are replaced"
+    required: true
+  tap-path:
+    description: "Path of the file inside the tap: Formula/<name>.rb or Casks/<name>.rb"
+    required: true
+  version:
+    description: "Replaces @VERSION@"
+    required: true
+  sha256:
+    description: "Newline-separated NAME=path lines. The SHA-256 of each file (relative to the workspace) replaces @NAME@"
+    required: false
+    default: ""
+
+outputs:
+  path:
+    description: "The rendered file, $RUNNER_TEMP/homebrew/<tap-path>"
+    value: ${{ steps.render.outputs.path }}
+
+runs:
+  using: composite
+  steps:
+    - id: render
+      shell: bash
+      env:
+        TEMPLATE: ${{ inputs.template }}
+        TAP_PATH: ${{ inputs.tap-path }}
+        VERSION: ${{ inputs.version }}
+        SHA256: ${{ inputs.sha256 }}
+      run: bash "$GITHUB_ACTION_PATH/../lib/render.sh"

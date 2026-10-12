@@ -22,4 +22,13 @@ while read -r ref; do
   [[ -f $dir/action.yml ]] || fail "$ref does not resolve to $dir/action.yml"
 done < <(grep -rhoE '(\./|muleyuck/github-actions/)actions/[a-z0-9/-]+(@[A-Za-z0-9._-]+)?' .github/workflows | sort -u)
 
+# The homebrew actions run a shared script by path, which neither actionlint
+# nor the reference check above can see.
+[[ -f actions/homebrew/lib/render.sh ]] ||
+  fail "actions/homebrew/lib/render.sh is missing"
+for action in render publish; do
+  grep -qF 'run: bash "$GITHUB_ACTION_PATH/../lib/render.sh"' "actions/homebrew/$action/action.yml" ||
+    fail "actions/homebrew/$action/action.yml must run \$GITHUB_ACTION_PATH/../lib/render.sh"
+done
+
 exit $status

@@ -1,0 +1,25 @@
+class Example < Formula
+  desc "Fixture for the homebrew render action"
+  homepage "https://github.com/muleyuck/github-actions"
+  version "@VERSION@"
+  license "MIT"
+
+  on_macos do
+    on_arm do
+      url "https://example.com/example-#{version}-arm.tar.xz"
+      sha256 "@SHA256_A@"
+    end
+    on_intel do
+      url "https://example.com/example-#{version}-intel.tar.xz"
+      sha256 "@SHA256_B@"
+    end
+  end
+
+  def install
+    bin.install "example"
+  end
+
+  test do
+    assert_match version.to_s, shell_output("#{bin}/example --version")
+  end
+end
