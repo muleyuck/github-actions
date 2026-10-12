@@ -51,6 +51,7 @@ input reference, the permissions each workflow needs, and the migration steps.
 | `actions/lua/luacheck` | Install and run luacheck |
 | `actions/lua/stylua` | Check formatting with stylua |
 | `actions/lua/setup-neovim` | Install Neovim for the test suite |
+| `actions/homebrew/render` | Render a Homebrew formula or cask template and check it with brew style |
 
 ## Versioning
 
