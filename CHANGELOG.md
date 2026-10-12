@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/muleyuck/github-actions/compare/v1.3.0...v1.4.0) (2026-10-12)
+
+
+### Features
+
+* add composite actions that render Homebrew formulae and casks and publish them to the tap ([#14](https://github.com/muleyuck/github-actions/issues/14)) ([590580e](https://github.com/muleyuck/github-actions/commit/590580ef3cc8124cf2d6f90752bf696703c5b894))
+
+
+### Dependencies
+
+* update jdx/mise-action action to v5.1.1 ([#12](https://github.com/muleyuck/github-actions/issues/12)) ([5f57313](https://github.com/muleyuck/github-actions/commit/5f573130c0a762579f9bbb5a8d388efd0ab201cb))
+
 ## [1.3.0](https://github.com/muleyuck/github-actions/compare/v1.2.0...v1.3.0) (2026-10-05)
 
 
