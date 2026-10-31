@@ -19,12 +19,20 @@ runs:
         install_args: ${{ inputs.install-args }}
         working_directory: ${{ inputs.working-directory }}
 
+    # target/ holds paths and objects from the runner image's toolchain (an Xcode path in
+    # ort-sys's link flags, C objects built for the SDK's macOS), so each image OS release
+    # (ImageOS: macos15, ubuntu24, ...) and architecture gets its own cache. ImageOS is a
+    # GitHub-hosted runner variable, not in the env context; elsewhere the key uses "unknown".
+    - id: image
+      shell: bash
+      run: echo "name=${ImageOS:-unknown}" >> "$GITHUB_OUTPUT"
+
     - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
           target
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.image.outputs.name }}-cargo-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: |
-          ${{ runner.os }}-cargo-
+          ${{ runner.os }}-${{ runner.arch }}-${{ steps.image.outputs.name }}-cargo-
