@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.4.1](https://github.com/muleyuck/github-actions/compare/v1.4.0...v1.4.1) (2026-10-31)
+
+
+### Bug Fixes
+
+* **rust:** keep a separate cargo cache per runner image and architecture ([#21](https://github.com/muleyuck/github-actions/issues/21)) ([720fcc9](https://github.com/muleyuck/github-actions/commit/720fcc96f8aa3accf301159f98cfa92bed4e09b0))
+
+
+### Dependencies
+
+* update github-actions dependencies ([#17](https://github.com/muleyuck/github-actions/issues/17)) ([5812d22](https://github.com/muleyuck/github-actions/commit/5812d2267a45d61120b71dfbddde37e1fc364e53))
+* update jdx/mise-action action to v5.2.1 ([#19](https://github.com/muleyuck/github-actions/issues/19)) ([b89f1df](https://github.com/muleyuck/github-actions/commit/b89f1dfd1609f6f3f498c5cffb0acf17e35af0ce))
+* update jdx/mise-action action to v5.2.4 ([#20](https://github.com/muleyuck/github-actions/issues/20)) ([a8bff13](https://github.com/muleyuck/github-actions/commit/a8bff13568e84638646f08fad1ce13074c9f4715))
+
 ## [1.4.0](https://github.com/muleyuck/github-actions/compare/v1.3.0...v1.4.0) (2026-10-12)
 
 
