@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.2](https://github.com/muleyuck/github-actions/compare/v1.4.1...v1.4.2) (2026-11-28)
+
+
+### Dependencies
+
+* update github-actions dependencies ([#26](https://github.com/muleyuck/github-actions/issues/26)) ([7a64a08](https://github.com/muleyuck/github-actions/commit/7a64a086719d5dc314bf05e71e40a04ff9cdcb47))
+* update jdx/mise-action action to v5.2.6 ([#22](https://github.com/muleyuck/github-actions/issues/22)) ([db64b21](https://github.com/muleyuck/github-actions/commit/db64b21c886857610765e701c959e73f96488b79))
+* update jdx/mise-action action to v5.2.7 ([#24](https://github.com/muleyuck/github-actions/issues/24)) ([0c9296a](https://github.com/muleyuck/github-actions/commit/0c9296aeba39d0094052f612c4a6ecde3f9774ec))
+* update jdx/mise-action action to v5.2.9 ([#25](https://github.com/muleyuck/github-actions/issues/25)) ([ad77e4a](https://github.com/muleyuck/github-actions/commit/ad77e4a14897382801b811a11070e9e3aec75f9d))
+
 ## [1.4.1](https://github.com/muleyuck/github-actions/compare/v1.4.0...v1.4.1) (2026-10-31)
 
 
